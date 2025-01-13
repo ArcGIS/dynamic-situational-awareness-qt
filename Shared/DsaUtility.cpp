@@ -25,12 +25,21 @@
 // Qt headers
 #include <QDir>
 #include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QStandardPaths>
+#include <QJsonValueConstRef>
 #include <QtMath>
+
+// DSA headers
+#include "ConfigurationController.h"
 
 using namespace Esri::ArcGISRuntime;
 
 namespace Dsa {
+
+const QString DsaUtility::FILE_NAME_DSA_CONFIGURATIONS = "DsaConfigurations.json";
 
 /*!
   \class Dsa::DsaUtility
@@ -41,23 +50,95 @@ namespace Dsa {
 /*!
   \brief Returns the platform independent data path to \c [HOME]/ArcGIS/Runtime/Data/DSA.
  */
-QString DsaUtility::dataPath()
+QString DsaUtility::configurationsDirectoryPath()
 {
-  QDir dataDir;
-#ifdef Q_OS_ANDROID
-  dataDir = QDir(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-#elif defined Q_OS_IOS
-  dataDir = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+  // return the cached path to the configurations folder
+  static QString path;
+  if (!path.isNull())
+    return path;
+
+  // setup the root directory based on the os/platform
+#if defined Q_OS_ANDROID || defined Q_OS_IOS
+  QDir dir{QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)};
 #else
-  dataDir = QDir::home();
+  QDir dir{QDir::home()};
 #endif
 
-  dataDir.cd("ArcGIS");
-  dataDir.cd("Runtime");
-  dataDir.cd("Data");
-  dataDir.cd("DSA");
+  // append the standard path to the dsa application data folder structure
+  dir.cd("ArcGIS");
+  dir.cd("Runtime");
+  dir.cd("Data");
+  dir.cd("DSA");
 
-  return dataDir.exists() ? dataDir.absolutePath() : "";
+  // return the full path to the configurations directory
+  path = QString(dir.absolutePath());
+  return path;
+}
+
+QString DsaUtility::configurationsFilePath()
+{
+  // return the cached path to the configuration file
+  static QString path;
+  if (!path.isNull())
+    return path;
+
+  // return the full path to the configurations file
+  QDir dir{DsaUtility::configurationsDirectoryPath()};
+  path = dir.absoluteFilePath(FILE_NAME_DSA_CONFIGURATIONS);
+  return path;
+}
+
+QString DsaUtility::activeConfigurationPath()
+{
+  // return the cached path to the configuration folder
+  static QString path;
+  if (!path.isNull())
+    return path;
+
+  // check for the default configurations file and create if it doesn't exist
+  QFile fileConfigurations{DsaUtility::configurationsFilePath()};
+  if (!fileConfigurations.exists())
+    ConfigurationController::createDefaultConfigurationsFile();
+
+  // get the first 'selected' configuration in the file
+  QString selectedConfigurationName{};
+  if (fileConfigurations.open(QIODevice::ReadOnly))
+  {
+    QJsonParseError parseError;
+    const auto docConfigurations = QJsonDocument::fromJson(fileConfigurations.readAll(), &parseError);
+    if (!docConfigurations.isNull() && !docConfigurations.isEmpty() && docConfigurations.isArray())
+    {
+      const auto configurationsArray = docConfigurations.array();
+      for (const auto& configurationNode : configurationsArray)
+      {
+        if (configurationNode.isObject())
+        {
+          // get the selected value
+          const auto configurationObject = configurationNode.toObject();
+          const auto configurationSelected = configurationObject["selected"].toBool();
+          if (configurationSelected)
+          {
+            selectedConfigurationName = configurationObject["name"].toString();
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // abort if the file contained nothing that could resolve to disk
+  if (selectedConfigurationName.isEmpty())
+    return QString{};
+
+  // find the selected configuration folder on disk and create if not exists
+  QDir dirConfigurations{DsaUtility::configurationsDirectoryPath()};
+  QDir dirConfiguration{dirConfigurations.filePath(selectedConfigurationName)};
+  if (!dirConfiguration.exists())
+    dirConfigurations.mkdir(selectedConfigurationName);
+
+  // cache the value for the data path, toggle the cached flag and return the value
+  path = dirConfiguration.absolutePath();
+  return path;
 }
 
 /*!

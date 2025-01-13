@@ -87,5 +87,13 @@ CategoryToolbar {
             categoryName: "markup"
             onCategorySelected: categoryToolbar.state = categoryName
         }
+
+        CategoryIcon {
+            id: configurationsIcon
+            anchors.verticalCenter: parent.verticalCenter
+            iconSource: DsaResources.iconAddLayer
+            categoryName: "configurations"
+            onCategorySelected: categoryToolbar.state = categoryName
+        }
     }
 }

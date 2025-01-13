@@ -17,6 +17,8 @@
 #ifndef DSA_PCH_HPP
 #define DSA_PCH_HPP
 
+#ifdef __cplusplus
+
 // dsa app headers
 #include "AlertCondition.h"
 #include "AlertFilter.h"
@@ -42,5 +44,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QVariantMap>
+
+#endif // __cplusplus
 
 #endif // DSA_PCH_HPP

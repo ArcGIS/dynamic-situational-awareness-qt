@@ -108,6 +108,15 @@ Vehicle {
                 rightMargin: 10 * scaleFactor
             }
         }
+
+        ConfigurationsToolRow {
+            id: configurationsToolRow
+            anchors {
+                verticalCenter: parent.verticalCenter
+                right: parent.right
+                rightMargin: 10 * scaleFactor
+            }
+        }
     }
 
     // Create SceneQuickView here, and create its Scene etc. in C++ code
@@ -369,6 +378,31 @@ Vehicle {
 
                 if (reportToolRow.state !== reportToolRow.observationState)
                     reportToolRow.state = reportToolRow.observationState;
+            }
+        }
+
+        ConfigurationsTool {
+            id: configurationsTool
+            anchors {
+                right: parent.right
+                top: parent.top
+                bottom: sceneView.attributionTop
+            }
+            width: drawer.width
+            visible: false
+            onClosed: {
+                visible = false;
+                configurationsToolRow.state = configurationsToolRow.clearState;
+            }
+
+            onVisibleChanged: {
+                if (!visible)
+                    return;
+
+                categoryToolbar.state = "configurations";
+
+                if (configurationsToolRow.state !== configurationsToolRow.observationState)
+                    configurationsToolRow.state = configurationsToolRow.observationState;
             }
         }
 

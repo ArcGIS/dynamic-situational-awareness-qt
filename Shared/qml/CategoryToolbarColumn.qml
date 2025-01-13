@@ -90,6 +90,14 @@ CategoryToolbar {
             categoryName: "markup"
             onCategorySelected: categoryToolbar.state = categoryName
         }
+
+        CategoryIcon {
+            id: configurationsIcon
+            anchors.horizontalCenter: parent.horizontalCenter
+            iconSource: DsaResources.iconAddLayer
+            categoryName: "configurations"
+            onCategorySelected: categoryToolbar.state = categoryName
+        }
     }
 
     CategoryIcon {
