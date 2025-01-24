@@ -24,13 +24,16 @@ ARCGIS_RUNTIME_VERSION = 200.5.0
 DEFINES += ARCGIS_MAPS_SDK_VERSION=$$ARCGIS_RUNTIME_VERSION
 include($$PWD/../Shared/build/arcgisruntime.pri)
 
+include($$PWD/../3rdparty/zlib-ng/zlib_minizip_ng.pri)
+
 INCLUDEPATH += $$PWD/../Shared/ \
     $$PWD/../Shared/alerts \
     $$PWD/../Shared/analysis \
     $$PWD/../Shared/messages \
     $$PWD/../Shared/packages \
     $$PWD/../Shared/utilities \
-    $$PWD/../Shared/markup
+    $$PWD/../Shared/markup \
+    $$PWD/../Shared/configurations
 
 HEADERS += \
     AppInfo.h \
@@ -42,7 +45,8 @@ HEADERS += \
     $$files($$PWD/../Shared/messages/*.h) \
     $$files($$PWD/../Shared/packages/*.h) \
     $$files($$PWD/../Shared/utilities/*.h) \
-    $$files($$PWD/../Shared/markup/*.h)
+    $$files($$PWD/../Shared/markup/*.h) \
+    $$files($$PWD/../Shared/configurations/*.h)
 
 SOURCES += \
     main.cpp \
@@ -54,7 +58,8 @@ SOURCES += \
     $$files($$PWD/../Shared/messages/*.cpp) \
     $$files($$PWD/../Shared/packages/*.cpp) \
     $$files($$PWD/../Shared/utilities/*.cpp) \
-    $$files($$PWD/../Shared/markup/*.cpp)
+    $$files($$PWD/../Shared/markup/*.cpp) \
+    $$files($$PWD/../Shared/configurations/*.cpp)
 
 RESOURCES += \
     qml/qml.qrc \

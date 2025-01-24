@@ -30,6 +30,7 @@ namespace Esri::ArcGISRuntime {
   class GeoElement;
   class GeoElementLineOfSight;
   class GeoView;
+  class Layer;
   class LayerListModel;
   class FeatureLayer;
   class FeatureQueryResult;

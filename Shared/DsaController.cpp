@@ -496,7 +496,7 @@ bool DsaController::isConflictingTool(const QString& toolName) const
 void DsaController::createDefaultSettings()
 {
   // setup the defaults
-  m_dsaSettings["RootDataDirectory"] = DsaUtility::dataPath();
+  m_dsaSettings["RootDataDirectory"] = DsaUtility::activeConfigurationPath();
   m_dsaSettings[AppConstants::USERNAME_PROPERTYNAME] = QHostInfo::localHostName();
   m_dsaSettings["BasemapDirectory"] = QString("%1/BasemapData").arg(m_dsaSettings["RootDataDirectory"].toString());
   m_dsaSettings["ElevationDirectory"] = QString("%1/ElevationData").arg(m_dsaSettings["RootDataDirectory"].toString());
